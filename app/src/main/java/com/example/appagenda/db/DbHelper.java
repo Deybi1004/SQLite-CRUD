@@ -24,7 +24,6 @@ public class DbHelper extends SQLiteOpenHelper {
                 "nombre TEXT NOT NULL," +
                 "telefono TEXT NOT NULL," +
                 "correo_electronico TEXT)");
-        Log.d("Base de datos","Creado correctamente");
     }
 
     @Override

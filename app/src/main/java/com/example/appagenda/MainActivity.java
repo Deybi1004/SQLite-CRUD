@@ -1,8 +1,11 @@
 package com.example.appagenda;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,44 +15,42 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.appagenda.adaptadores.ListaContactoAdapter;
+import com.example.appagenda.db.DbContactos;
 import com.example.appagenda.db.DbHelper;
+import com.example.appagenda.entidades.Contactos;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    Button btnCrear;
-
+    RecyclerView listaContactos;
+    ArrayList<Contactos> listaArrayContactos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnCrear = findViewById(R.id.btnCrear);
-        btnCrear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DbHelper dbHelper = new DbHelper(MainActivity.this);
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                if (db != null) {
-                    Toast.makeText(MainActivity.this, "Base de datos creado correctamente", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "Error en la creación de la base de datos", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        listaContactos = findViewById(R.id.listaContactos);
+        listaContactos.setLayoutManager(new LinearLayoutManager(this));
+        DbContactos dbContactos = new DbContactos(MainActivity.this);
+
+        listaArrayContactos = new ArrayList<>();
+        ListaContactoAdapter adapter = new ListaContactoAdapter(dbContactos.mostrarContactos());
+        listaContactos.setAdapter(adapter);
     }
 
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_principal, menu);
+        getMenuInflater().inflate(R.menu.menu_principal, menu);
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.newMenu:
-                nuevoRegistro();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.newMenu) {
+            nuevoRegistro();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 
